@@ -1,0 +1,35 @@
+Web scraping
+	Get first search link from google
+	Get the html of a page to machine
+	get the json format from html xml format
+
+database:
+	Create tables using sqlalchemy and put values from csv
+	csv in pandas to database
+	Query database using sql
+	query after bringing a database to pandas
+
+HTML: 
+	Simple webpage using forms
+LAMP stack: 
+	Connecting html forms to database
+
+Python flask:
+	connecting html forms to database
+
+pandas utils:
+	basic operations
+
+Python utils:
+	String editing	
+
+algorithms:
+	KNN
+	SVM rank,
+	regression,
+
+
+
+
+To DO:
+try: get: exception
