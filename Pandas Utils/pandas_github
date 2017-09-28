@@ -1,0 +1,117 @@
+# Get the current path 
+from inspect import getsourcefile
+path =  os.path.dirname(os.path.abspath(getsourcefile(lambda:0)))
+
+
+# Read CSV 
+inpColumn = pd.read_csv(path +'/data/dataFromEachSource.csv') # read more about the variants
+
+
+# Drop na from series: convert series to list
+keyurColumns = inpColumn['keyurColumns'].dropna().tolist()
+
+
+# Ignore the unicode errors
+ with codecs.open(path + '/data/keyur.csv', "r", encoding='utf-8',errors='ignore') as keyur_temp:   # ignore encoding
+        keyurData = pd.read_csv(keyur_temp)
+
+# rename column headers # inplace changes for same variabel
+keyurData.rename(columns={'Source' 	:	'source',
+            'Company Name' 	:	'startupName'}, inplace = true)
+
+
+# get selected columns from a dataframe as a subdataframe
+keyurData = keyurData[keyurColumns]
+
+# strip a string from white spaces
+keyurData.startupName = keyurData.startupName.str.strip()            
+
+
+# convert a string to uppercase # use astype  # apply command. read more about apply command
+keyurData.startupName = keyurData.startupName.astype(str).apply(lambda x: x.upper()) # find out the difference between this and str
+
+# replace the words in a string after converting to string
+keyurData.startupName = keyurData.startupName.str.replace('PVT.', '').str.replace('LTD.', '').str.replace('PRIVATE','').str.replace('LIMITED', '').str.strip()
+
+
+# string to datetime format
+keyurData['roundDate'] = pd.to_datetime(keyurData['roundDate'], format="%m/%d/%Y")
+
+# get a subset of the dataframe based on a condition
+keyurData = keyurData[(keyurData['DOI'] >= 2014) | (keyurData['DOI'].isnull())]
+
+
+# groupby certain rows based on condition # there are a lot more aggregatte functions
+keyurData = keyurData.groupby(["startupName"]).agg(
+        {
+            'ICB_industry':'first',
+           'ICB_sector':'first',
+         'foundedDate':'first',
+         'startupClassification':'first',
+        'investorName': lambda x: list(x)}).reset_index()
+
+# iterate the rows in a dataframe ( return a tuple of index and the entrire row object)
+for index, row in keyurData.iterrows():        
+
+
+# zip object and sort them and return. Helps in mapping the routine
+        outTuple = [(x1, x2,x3,x4,x5,x6,x7,x8)
+                    for y, x1, x2,x3,x4,x5,x6,x7,x8 in
+                    sorted(zip(row['roundDate'],row['investorName'],
+                          row['linkedinURL'],row['roundInvestmentAmount'],
+                          row['investorType'],row['dealInvestmentAmount'],
+                          row['investmentStage'],row['stageClassification'],
+                          row['equityValuation']))]
+        row['roundDate'] = sorted(row['roundDate'])
+
+# write a csv from pandas and dont retain the index
+keyurData.to_csv(path+'/metaOutput/keyurData.csv', index=False) 	
+
+
+
+# replace the nan in  a dateframe to an empty string # read more about the nan. empty string empty array etc
+internData.fillna('',inplace=True)
+
+
+# merging data in more than one column in to a single column
+internData['startupClassification'] = [list(val) for val in(zip(internData['startupClassification'],internData['startupClassification2']))]
+
+
+
+# dropping columns from a dataframe # read about the axis a bit more
+internData.drop( dropColumns,axis=1,inplace=True)
+
+
+# to get the boolean true or false of any row in a series 
+internData.loc[internData['startupName'].isnull() or internData.loc[internData['startupName'].notnull()
+
+# to get the subset of a dataframe based on row index number 
+internDataNonFunded = internData.loc[:,"roundDate"]
+
+
+# open a file and read 
+founderFile = open(path + '/data/founders_profiles_new.json').read()
+
+#converting a file of json objects into a list of json objects so that we can import into a pandas dataframe
+invFile = invFile.replace('\n', '').replace('\r', '').replace('}{', '},{')
+
+# add a new column to a dataframe
+
+founderData['F_or_I'] = 'F'
+
+# append two dataframes
+personData = founderData.append(invData)
+
+
+# generate a new dataframe  from a list in a column in a dataframe
+
+seriesList = []
+for row in range(personData.shape[0]):
+    for schoolIndex in range(len(personData.iloc[row]["schools"])):
+        schseries = pd.Series(
+            [personData.iloc[row]["name"], personData.iloc[row]["schools"][schoolIndex]["duration"],
+             personData.iloc[row]["schools"][schoolIndex]["college"],
+             personData.iloc[row]["schools"][schoolIndex]["degree"], personData.iloc[row]["F_or_I"]],
+            index=['name', 'duration', 'college', 'degree', 'F_or_I'])
+        seriesList.append(schseries)
+educationData = pd.DataFrame(seriesList)
